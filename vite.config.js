@@ -14,7 +14,12 @@ export default defineConfig({
       emitCss: false // Prevent generating external CSS files
     }),
     // 2) Setelah build, ambil semua CSS dan inject ke dalam JS
-    cssInjectedByJs()
+    cssInjectedByJs({
+      // Improved options for CSS injection
+      topExecutionPriority: true,
+      injectCode: null, // Use the default injector for better compatibility
+      styleId: 'dripsender-otp-styles', // Give the style element a specific ID
+    })
   ],
   build: {
     cssCodeSplit: false,

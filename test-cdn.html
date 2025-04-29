@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTP Widget Test</title>
+</head>
+<body>
+  <h1>OTP Widget Test</h1>
+  
+  <!-- OTP Widget Container -->
+  <div 
+    id="otp-widget"
+    reqotp="https://idris.dripsender.id:15326/api/integration/b6007c77-e4c2-4c0b-bc04-1baef94faf14" 
+    verifyotp="https://idris.dripsender.id:15326/api/integration/5dfbdaf8-f030-44ce-b27f-93b5fe87e17a" 
+    title="Verifikasi OTP"
+  ></div>
+  
+  <!-- Import the widget from local dist folder (to test locally) -->
+  <script type="module" src="./dist/assets/main.js"></script>
+  
+  <!-- For testing with CDN, uncomment the line below and comment the line above -->
+  <!-- <script type="module" src="https://cdn.jsdelivr.net/npm/dripsender-otp-widget@latest/dist/assets/main.js"></script> -->
+</body>
+</html> 

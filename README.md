@@ -40,6 +40,7 @@ Add the widget element to your HTML:
   reqotp="YOUR_REQUEST_OTP_ENDPOINT" 
   verifyotp="YOUR_VERIFY_OTP_ENDPOINT"
   title="Your Custom Title"
+  not-registered-message="Custom message for unregistered numbers"
 ></div>
 ```
 
@@ -52,6 +53,7 @@ The widget can be customized using the following attributes:
 | `reqotp` | API endpoint URL for requesting OTP | Required |
 | `verifyotp` | API endpoint URL for verifying OTP | Required |
 | `title` | Custom title for the verification modal | "Verifikasi OTP" |
+| `not-registered-message` | Custom message displayed when a phone number is not registered | "Nomor HP tidak ditemukan" |
 
 ## Troubleshooting
 

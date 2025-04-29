@@ -13,6 +13,7 @@ function initOtpWidget() {
   const vp_url = target.getAttribute('reqotp')
   const votp_url = target.getAttribute('verifyotp')
   const title = target.getAttribute('title') || 'Verifikasi OTP'
+  const notRegisteredMessage = target.getAttribute('not-registered-message') || 'Nomor HP tidak ditemukan'
 
   console.log('Initializing OTP Widget', vp_url, votp_url)
   const app = new App({
@@ -20,7 +21,8 @@ function initOtpWidget() {
     props: {
       vp_url,
       votp_url,
-      title
+      title,
+      notRegisteredMessage
     }
   })
 

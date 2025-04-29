@@ -5,6 +5,7 @@
   export let title = 'Verifikasi OTP';
   export let vp_url = '';
   export let votp_url = '';
+  export let notRegisteredMessage = 'Nomor HP tidak ditemukan';
   let phoneNumber = '';
   let otpDigits = ['', '', '', '', ''];
   let otpNumber = otpDigits.length;
@@ -55,7 +56,7 @@
       }, 300);
       }else{
         isLoading = false;
-        errorMessage = 'Nomor HP tidak ditemukan';
+        errorMessage = notRegisteredMessage;
         shakeElement('phone-container');
       }
   }

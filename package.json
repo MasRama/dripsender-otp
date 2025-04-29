@@ -1,12 +1,29 @@
 {
-  "name": "otp-widget",
-  "private": true,
-  "version": "0.0.0",
+  "name": "dripsender-otp-widget",
+  "version": "1.0.1",
   "type": "module",
+  "description": "A customizable OTP verification widget for Dripsender",
+  "main": "dist/assets/main.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
+  },
+  "keywords": [
+    "otp",
+    "verification",
+    "svelte",
+    "dripsender",
+    "widget"
+  ],
+  "author": "RyuShineo",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/masrama/dripsender-otp.git"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.4.6",

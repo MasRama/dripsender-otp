@@ -5,6 +5,11 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 export default defineConfig({
   plugins: [svelte()],
   build: {
+    lib: {
+      entry: './src/main.js',
+      name: 'DripsenderOTP',
+      fileName: 'dripsender-otp'
+    },
     rollupOptions: {
       output: {
         entryFileNames: 'assets/[name].js',

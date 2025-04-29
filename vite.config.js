@@ -1,18 +1,23 @@
 import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
+import cssInjectedByJs from 'vite-plugin-css-injected-by-js'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    // 1) Compile Svelte dengan CSS di-inline
     svelte({
       compilerOptions: {
         // Inline CSS into JavaScript
-        css: true
+        css: 'injected'
       },
       emitCss: false // Prevent generating external CSS files
-    })
+    }),
+    // 2) Setelah build, ambil semua CSS dan inject ke dalam JS
+    cssInjectedByJs()
   ],
   build: {
+    cssCodeSplit: false,
     lib: {
       entry: './src/main.js',
       name: 'DripsenderOTP',

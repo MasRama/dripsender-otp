@@ -3,7 +3,15 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [svelte()],
+  plugins: [
+    svelte({
+      compilerOptions: {
+        // Inline CSS into JavaScript
+        css: true
+      },
+      emitCss: false // Prevent generating external CSS files
+    })
+  ],
   build: {
     lib: {
       entry: './src/main.js',

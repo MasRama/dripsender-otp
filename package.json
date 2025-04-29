@@ -1,6 +1,6 @@
 {
   "name": "dripsender-otp-widget",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "type": "module",
   "description": "A customizable OTP verification widget for Dripsender",
   "main": "dist/assets/main.js",

@@ -14,18 +14,14 @@ npm install dripsender-otp-widget
 
 #### JSDelivr (Recommended)
 ```html
-<!-- Import JavaScript -->
+<!-- CSS is inlined in the JavaScript bundle -->
 <script type="module" src="https://cdn.jsdelivr.net/npm/dripsender-otp-widget@latest/dist/assets/main.js"></script>
-<!-- Import CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dripsender-otp-widget@latest/dist/assets/style.css">
 ```
 
 #### Unpkg
 ```html
-<!-- Import JavaScript -->
+<!-- CSS is inlined in the JavaScript bundle -->
 <script type="module" src="https://unpkg.com/dripsender-otp-widget/dist/assets/main.js"></script>
-<!-- Import CSS -->
-<link rel="stylesheet" href="https://unpkg.com/dripsender-otp-widget/dist/assets/style.css">
 ```
 
 ### HTML Setup

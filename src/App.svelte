@@ -286,7 +286,7 @@
                 id="phone"
                 bind:value={phoneNumber}
                 placeholder="Masukkan nomor HP Anda"
-                class="w-full p-4 border-2 border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:border-blue-500 transition-all duration-200"
+                class="w-full p-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-all duration-200" style="color: #111827;"
               />
             </div>
           </div>
@@ -327,7 +327,7 @@
                     on:keydown={(e) => handleKeyDown(index, e)}
                     on:paste={handlePaste}
                     on:focus={() => handleFocus(index)}
-                    class="w-12 h-14 text-center text-xl font-bold text-gray-900 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-all duration-200"
+                    class="w-12 h-14 text-center text-xl font-bold border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-all duration-200" style="color: #111827;"
                   />
                   <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-8 h-1 rounded-full transition-all duration-200 {activeInput === index ? 'bg-blue-500' : 'bg-transparent'}"></div>
                 </div>

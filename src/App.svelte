@@ -301,6 +301,8 @@
                 id="phone"
                 bind:value={phoneNumber}
                 placeholder="Masukkan nomor HP Anda"
+                on:keydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handlePhoneSubmit(); }}}
+                autocomplete="off"
                 class="w-full p-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-all duration-200" style="color: #111827 !important;"
               />
             </div>
@@ -338,6 +340,7 @@
                     id="otp-{index}"
                     maxlength="1"
                     inputmode="numeric"
+                    autocomplete="off"
                     value={digit}
                     on:input={(e) => handleOtpInput(index, e)}
                     on:keydown={(e) => handleKeyDown(index, e)}

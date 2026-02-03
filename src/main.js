@@ -1,39 +1,64 @@
-import './app.css'
 import App from './App.svelte'
+import compiledCss from './compiled.css?inline'
 
-// Function to ensure DOM is ready before initializing
-function initOtpWidget() {
-  // CSS will be inlined into the JavaScript bundle
-  const target = document.getElementById('otp-widget')
-  if (!target) {
-    console.error('OTP Widget element not found. Make sure to add an element with id="otp-widget"')
+// Detect environment
+const isDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+const API_BASE = isDev ? 'http://localhost:6544' : 'https://api.dripsender.id'
+
+// Get key from script tag
+const script = document.currentScript
+const key = script?.getAttribute('data-id') || script?.getAttribute('data-key')
+
+function initWidget() {
+  if (!key) {
+    console.error('[OTP Widget] Missing data-id attribute')
     return
   }
-  
-  const vp_url = target.getAttribute('reqotp')
-  const votp_url = target.getAttribute('verifyotp')
-  const title = target.getAttribute('title') || 'Verifikasi OTP'
-  const notRegisteredMessage = target.getAttribute('not-registered-message') || 'Nomor HP tidak ditemukan'
 
-  console.log('Initializing OTP Widget', vp_url, votp_url)
-  const app = new App({
-    target,
-    props: {
-      vp_url,
-      votp_url,
-      title,
-      notRegisteredMessage
-    }
-  })
-
-  return app
+  // Fetch config and mount
+  fetch(`${API_BASE}/api/otp/config/${key}`)
+    .then(r => r.json())
+    .then(config => {
+      if (config.error) {
+        console.error('[OTP Widget] Config error:', config.error)
+        return
+      }
+      
+      // Create container - MUST be fixed position to cover screen
+      const container = document.createElement('div')
+      container.id = 'otp-widget-container'
+      container.style.cssText = 'position: fixed; inset: 0; z-index: 9999;'
+      document.body.appendChild(container)
+      
+      const shadow = container.attachShadow({ mode: 'closed' })
+      
+      // Inject compiled CSS into Shadow DOM
+      const style = document.createElement('style')
+      style.textContent = compiledCss
+      shadow.appendChild(style)
+      
+      // Mount point
+      const mountPoint = document.createElement('div')
+      mountPoint.style.cssText = 'width: 100%; height: 100%;'
+      shadow.appendChild(mountPoint)
+      
+      // Mount Svelte app
+      new App({
+        target: mountPoint,
+        props: {
+          vp_url: config.r,  // request otp url
+          votp_url: config.v, // verify otp url
+          title: config.t,
+          rememberHours: config.m || 0
+        }
+      })
+    })
+    .catch(err => {
+      console.error('[OTP Widget] Failed to load config:', err)
+    })
 }
 
-// Make sure DOM is ready before initializing
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initOtpWidget)
-} else {
-  initOtpWidget()
-}
+// Auto-initialize
+initWidget()
 
-export default {} // Export empty object as default
+export default {}

@@ -6,6 +6,7 @@
   export let vp_url = '';
   export let votp_url = '';
   export let notRegisteredMessage = 'Nomor HP tidak ditemukan';
+  export let rememberHours = 0;  // 0 = disabled
   let phoneNumber = '';
   let otpDigits = ['', '', '', '', ''];
   let otpNumber = otpDigits.length;
@@ -17,9 +18,16 @@
   let activeInput = 0;
   let securityEnabled = false;
 
-  if(localStorage.getItem('savedOtp') && localStorage.getItem('savedPhoneNumber'))
-  {
-    showModal = false;
+  // Check remembered device
+  const STORAGE_KEY = 'otp_verified_' + location.hostname
+  const EXPIRY_KEY = 'otp_expiry_' + location.hostname
+  
+  if (rememberHours > 0) {
+    const verified = localStorage.getItem(STORAGE_KEY)
+    const expiry = parseInt(localStorage.getItem(EXPIRY_KEY) || '0')
+    if (verified === 'true' && Date.now() < expiry) {
+      showModal = false
+    }
   }
 
   // Security functions to disable right-click and keyboard shortcuts
@@ -220,8 +228,13 @@
       // Matikan fitur keamanan sebelum menutup modal
       disableSecurity();
       showModal = false; 
-      localStorage.setItem('savedOtp', otp);
-      localStorage.setItem('savedPhoneNumber', phoneNumber);
+      
+      // Save remembered device if enabled
+      if (rememberHours > 0) {
+        const durationMs = rememberHours * 60 * 60 * 1000
+        localStorage.setItem(STORAGE_KEY, 'true')
+        localStorage.setItem(EXPIRY_KEY, (Date.now() + durationMs).toString())
+      }
     }else{
       isLoading = false;
       errorMessage = 'Kode OTP tidak valid';

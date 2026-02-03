@@ -58,6 +58,25 @@ function initWidget() {
     })
 }
 
+// Global prevention of form submissions (for Shadow DOM edge cases)
+if (typeof window !== 'undefined') {
+  // Block all click events that might cause navigation
+  document.addEventListener('click', (e) => {
+    const target = e.target
+    if (target.tagName === 'A' && !target.getAttribute('href')?.startsWith('#')) {
+      console.log('[OTP Widget] Blocked link click')
+      e.preventDefault()
+    }
+  }, true)
+  
+  window.addEventListener('submit', (e) => {
+    console.log('[OTP Widget] Blocked form submit')
+    e.preventDefault()
+    e.stopPropagation()
+    return false
+  }, true)
+}
+
 // Auto-initialize
 initWidget()
 

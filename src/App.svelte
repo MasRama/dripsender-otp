@@ -16,7 +16,6 @@
   let successMessage = '';
   let showModal = true;
   let activeInput = 0;
-  let securityEnabled = false;
 
   // Check remembered device
   const STORAGE_KEY = 'otp_verified_' + location.hostname
@@ -30,88 +29,15 @@
     }
   }
 
-  // Security functions to disable right-click and keyboard shortcuts
-  function disableSecurity() {
-    if (securityEnabled) {
-      document.removeEventListener('contextmenu', blockContextMenu);
-      document.removeEventListener('keydown', blockKeyboardShortcuts);
-      document.body.classList.remove('no-select');
-      securityEnabled = false;
-    }
-  }
-
-  function enableSecurity() {
-    if (!securityEnabled) {
-      document.addEventListener('contextmenu', blockContextMenu);
-      document.addEventListener('keydown', blockKeyboardShortcuts);
-      document.body.classList.add('no-select');
-      securityEnabled = true;
-    }
-  }
-
-  function blockContextMenu(e) {
-    if (showModal) {
-      e.preventDefault();
-      return false;
-    }
-  }
-
-  function blockKeyboardShortcuts(e) {
-    if (showModal) {
-      // Block Ctrl+A (Select All)
-      if (e.ctrlKey && e.keyCode === 65) {
-        e.preventDefault();
-        return false;
-      }
-      
-      // Block Ctrl+C (Copy)
-      if (e.ctrlKey && e.keyCode === 67) {
-        e.preventDefault();
-        return false;
-      }
-      
-      // Block Ctrl+Shift+I, F12 (Inspect Element)
-      if ((e.ctrlKey && e.shiftKey && e.keyCode === 73) || e.keyCode === 123) {
-        e.preventDefault();
-        return false;
-      }
-      
-      // Block Ctrl+Shift+C (Inspector's element selector)
-      if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
-        e.preventDefault();
-        return false;
-      }
-      
-      // Block Ctrl+U (View Source)
-      if (e.ctrlKey && e.keyCode === 85) {
-        e.preventDefault();
-        return false;
-      }
-    }
-  }
-
-  // Watch for modal visibility changes
-  $: {
-    if (showModal) {
-      enableSecurity();
-    } else {
-      disableSecurity();
-    }
-  }
-
   onMount(() => {
-    if (showModal) {
-      enableSecurity();
-    }
-    
-    return () => {
-      disableSecurity();
-    };
-  });
+    console.log('[OTP Widget] Mounted', { vp_url, votp_url, title, rememberHours })
+  })
 
   // Handle phone number submission
   async function handlePhoneSubmit(e) {
     if (e) { e.preventDefault(); e.stopPropagation(); }
+    console.log('[OTP Widget] handlePhoneSubmit called')
+    
     if (!phoneNumber) {
       errorMessage = 'Silakan masukkan nomor HP';
       shakeElement('phone-container');
@@ -121,56 +47,52 @@
     errorMessage = '';
     isLoading = true;
     
-    // Simulate API call to send OTP
-    const res = await fetch(vp_url, {
+    try {
+      const res = await fetch(vp_url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phone: phoneNumber
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: phoneNumber })
       });
 
       const data = await res.json();
+      console.log('[OTP Widget] Phone submit response:', data)
 
-      if(data.exists)
-      {
+      if (data.exists) {
         isLoading = false;
-      showOtpInput = true;
-      successMessage = `Kode OTP telah dikirim ke ${phoneNumber}`;
-        // Focus first OTP input after transition
+        showOtpInput = true;
+        successMessage = `Kode OTP telah dikirim ke ${phoneNumber}`;
         setTimeout(() => {
-        document.getElementById('otp-0')?.focus();
-      }, 300);
-      }else{
+          document.getElementById('otp-0')?.focus();
+        }, 300);
+      } else {
         isLoading = false;
         errorMessage = notRegisteredMessage;
         shakeElement('phone-container');
       }
+    } catch (err) {
+      console.error('[OTP Widget] Phone submit error:', err)
+      isLoading = false;
+      errorMessage = 'Terjadi kesalahan, coba lagi';
+    }
   }
 
   // Handle OTP input
   function handleOtpInput(index, event) {
     const value = event.target.value;
     
-    // Only allow numbers
     if (!/^\d*$/.test(value)) {
       event.target.value = otpDigits[index];
       return;
     }
     
-    // Update the current digit
     otpDigits[index] = value.slice(-1);
     
-    // Auto-focus to next input
-    if (value && index < 5) {
+    if (value && index < 4) {
       document.getElementById(`otp-${index + 1}`)?.focus();
       activeInput = index + 1;
     }
     
-    // Check if all digits are filled
-    if (otpDigits.every(digit => digit !== '') && index === 5) {
+    if (otpDigits.every(digit => digit !== '') && index === 4) {
       verifyOtp();
     }
   }
@@ -191,10 +113,12 @@
   // Verify OTP
   async function verifyOtp(e) {
     if (e) { e.preventDefault(); e.stopPropagation(); }
+    console.log('[OTP Widget] verifyOtp called')
+    
     const otp = otpDigits.join('');
     
-    if (otp.length !== otpDigits.length) {
-      errorMessage = 'Silakan masukkan kode OTP ' + otpDigits.length + ' digit';
+    if (otp.length !== 5) {
+      errorMessage = 'Silakan masukkan kode OTP 5 digit';
       shakeElement('otp-container');
       return;
     }
@@ -202,45 +126,43 @@
     errorMessage = '';
     isLoading = true;
     
-    // Simulate API call to verify OTP
-    const res = await fetch(votp_url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        phone: phoneNumber,
-        otp: otp
-      })
-    });
+    try {
+      const res = await fetch(votp_url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: phoneNumber, otp: otp })
+      });
 
-    const data = await res.json();
+      const data = await res.json();
+      console.log('[OTP Widget] Verify response:', data)
 
-    if(data.status == "success")
-    {
-      isLoading = false;
-      successMessage = 'Verifikasi berhasil!';
-      
-      // Add success animation
-      const container = document.querySelector('.modal-content');
-      if (container) {
-        container.classList.add('success-animation');
+      if (data.status == "success") {
+        isLoading = false;
+        successMessage = 'Verifikasi berhasil!';
+        
+        const container = document.querySelector('.modal-content');
+        if (container) {
+          container.classList.add('success-animation');
+        }
+
+        showModal = false;
+        
+        if (rememberHours > 0) {
+          const durationMs = rememberHours * 60 * 60 * 1000
+          localStorage.setItem(STORAGE_KEY, 'true')
+          localStorage.setItem(EXPIRY_KEY, (Date.now() + durationMs).toString())
+        }
+        
+        console.log('[OTP Widget] Verification successful, modal hidden')
+      } else {
+        isLoading = false;
+        errorMessage = 'Kode OTP tidak valid';
+        shakeElement('otp-container');
       }
-
-      // Matikan fitur keamanan sebelum menutup modal
-      disableSecurity();
-      showModal = false; 
-      
-      // Save remembered device if enabled
-      if (rememberHours > 0) {
-        const durationMs = rememberHours * 60 * 60 * 1000
-        localStorage.setItem(STORAGE_KEY, 'true')
-        localStorage.setItem(EXPIRY_KEY, (Date.now() + durationMs).toString())
-      }
-    }else{
+    } catch (err) {
+      console.error('[OTP Widget] Verify error:', err)
       isLoading = false;
-      errorMessage = 'Kode OTP tidak valid';
-      shakeElement('otp-container');
+      errorMessage = 'Terjadi kesalahan, coba lagi';
     }
   }
 
@@ -251,20 +173,19 @@
     
     if (!/^\d+$/.test(pastedData)) return;
     
-    const digits = pastedData.slice(0, otpNumber).split('');
+    const digits = pastedData.slice(0, 5).split('');
     
     digits.forEach((digit, index) => {
-      if (index < otpNumber) {
+      if (index < 5) {
         otpDigits[index] = digit;
       }
     });
     
-    // Focus last filled input or next empty one
-    const lastIndex = Math.min(digits.length, 5);
+    const lastIndex = Math.min(digits.length, 4);
     document.getElementById(`otp-${lastIndex}`)?.focus();
     activeInput = lastIndex;
     
-    if (digits.length === otpNumber) {
+    if (digits.length === 5) {
       verifyOtp();
     }
   }
@@ -283,7 +204,7 @@
 
 {#if showModal}
 <div class="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
-  <div class="modal-content relative w-full max-w-md transform transition-all duration-300 ease-in-out scale-100 translate-y-0 {securityEnabled ? 'secure-otp' : ''}">
+  <div class="modal-content relative w-full max-w-md transform transition-all duration-300 ease-in-out scale-100 translate-y-0">
     <div class="bg-gradient-to-br from-blue-500 to-purple-600 p-1 rounded-2xl shadow-2xl">
       <div class="bg-white p-8 rounded-2xl">
         <div class="text-center mb-8">
@@ -368,10 +289,7 @@
               
               <button
                 type="button"
-                on:click={() => {
-                  successMessage = '';
-                  handlePhoneSubmit();
-                }}
+                on:click={() => { successMessage = ''; handlePhoneSubmit(); }}
                 class="text-blue-600 hover:text-blue-800 hover:underline transition-colors flex items-center"
                 aria-label="Kirim Ulang Kode"
               >
@@ -426,28 +344,13 @@
   </div>
 </div>
 {/if}
+
 <style>
   :global(body) {
     margin: 0;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
       Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     background-color: #f9fafb;
-  }
-  
-  /* Disable text selection for body when security is enabled */
-  :global(body.no-select) {
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-  }
-  
-  /* Disable text selection for OTP inputs when security is enabled */
-  :global(.secure-otp) {
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
   }
  
   @keyframes shake {
@@ -456,10 +359,17 @@
     20%, 40%, 60%, 80% { transform: translateX(5px); }
   }
   
-
   @keyframes success-pulse {
     0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(79, 209, 197, 0); }
     50% { transform: scale(1.03); box-shadow: 0 0 20px rgba(79, 209, 197, 0.5); }
+  }
+  
+  .shake {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+  }
+  
+  .success-animation {
+    animation: success-pulse 1.5s ease-in-out;
   }
   
   input[type="text"], input[type="tel"] {
@@ -486,14 +396,8 @@
   }
   
   @keyframes ripple {
-    0% {
-      transform: scale(0, 0);
-      opacity: 0.5;
-    }
-    100% {
-      transform: scale(20, 20);
-      opacity: 0;
-    }
+    0% { transform: scale(0, 0); opacity: 0.5; }
+    100% { transform: scale(20, 20); opacity: 0; }
   }
   
   button:focus:not(:active)::after {

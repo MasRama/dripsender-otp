@@ -305,6 +305,7 @@
           </div>
           
           <button
+            type="button"
             on:click={handlePhoneSubmit}
             disabled={isLoading}
             class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-xl hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 transition-all duration-200 transform hover:-translate-y-1 disabled:opacity-70 disabled:transform-none"
@@ -349,6 +350,7 @@
             
             <div class="flex justify-between text-sm">
               <button
+                type="button"
                 on:click={() => { showOtpInput = false; successMessage = ''; }}
                 class="text-blue-600 hover:text-blue-800 hover:underline transition-colors flex items-center"
                 aria-label="Ubah Nomor HP"
@@ -360,6 +362,7 @@
               </button>
               
               <button
+                type="button"
                 on:click={() => {
                   successMessage = '';
                   handlePhoneSubmit();
@@ -376,6 +379,7 @@
           </div>
           
           <button
+            type="button"
             on:click={verifyOtp}
             disabled={isLoading || otpDigits.some(digit => digit === '')}
             class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-xl hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 transition-all duration-200 transform hover:-translate-y-1 disabled:opacity-70 disabled:transform-none"

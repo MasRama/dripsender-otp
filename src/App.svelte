@@ -110,7 +110,8 @@
   });
 
   // Handle phone number submission
-  async function handlePhoneSubmit() {
+  async function handlePhoneSubmit(e) {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
     if (!phoneNumber) {
       errorMessage = 'Silakan masukkan nomor HP';
       shakeElement('phone-container');
@@ -188,7 +189,8 @@
   }
 
   // Verify OTP
-  async function verifyOtp() {
+  async function verifyOtp(e) {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
     const otp = otpDigits.join('');
     
     if (otp.length !== otpDigits.length) {
@@ -306,7 +308,7 @@
           
           <button
             type="button"
-            on:click={handlePhoneSubmit}
+            on:click|preventDefault|stopPropagation={handlePhoneSubmit}
             disabled={isLoading}
             class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-xl hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 transition-all duration-200 transform hover:-translate-y-1 disabled:opacity-70 disabled:transform-none"
           >
@@ -380,7 +382,7 @@
           
           <button
             type="button"
-            on:click={verifyOtp}
+            on:click|preventDefault|stopPropagation={verifyOtp}
             disabled={isLoading || otpDigits.some(digit => digit === '')}
             class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-xl hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 transition-all duration-200 transform hover:-translate-y-1 disabled:opacity-70 disabled:transform-none"
           >

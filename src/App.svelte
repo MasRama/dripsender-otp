@@ -7,6 +7,7 @@
   export let votp_url = '';
   export let notRegisteredMessage = 'Nomor HP tidak ditemukan';
   export let rememberHours = 0;  // 0 = disabled
+  export let onVerified = () => {};
   let phoneNumber = '';
   let otpDigits = ['', '', '', '', ''];
   let otpNumber = otpDigits.length;
@@ -31,6 +32,10 @@
 
   onMount(() => {
     console.log('[OTP Widget] Mounted', { vp_url, votp_url, title, rememberHours })
+    // If already verified (remembered device), cleanup immediately
+    if (!showModal && onVerified) {
+      onVerified()
+    }
   })
 
   // Handle phone number submission
@@ -152,6 +157,9 @@
           localStorage.setItem(STORAGE_KEY, 'true')
           localStorage.setItem(EXPIRY_KEY, (Date.now() + durationMs).toString())
         }
+        
+        // Notify parent to cleanup container and event listeners
+        if (onVerified) onVerified();
         
         console.log('[OTP Widget] Verification successful, modal hidden')
       } else {
